@@ -6,12 +6,13 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/fatih/color"
 )
 
 type IpInfo struct {
-	IP       string `json:"ip"`
+	IP       string `json:"query"`
 	Country  string `json:"country"`
 	Region   string `json:"region"`
 	City     string `json:"city"`
@@ -29,39 +30,52 @@ func main() {
 	cyan := color.New(color.FgCyan).SprintFunc()
 	bold := color.New(color.Bold).SprintFunc()
 
-	resp, err := http.Get("https://api.ipify.org?format=json")
-	if err != nil {
-		log.Fatalf("Error getting IP: %v", err)
-	}
-	defer resp.Body.Close()
+	var toCheck string
+	if len(os.Args) > 1 {
+		toCheck = os.Args[1]
+	} else {
+		resp, err := http.Get("https://api.ipify.org?format=json")
+		if err != nil {
+			log.Fatalf("Error getting IP: %v", err)
+		}
+		defer resp.Body.Close()
 
-	var ipResponse map[string]string
-	body, _ := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal(body, &ipResponse)
-	if err != nil {
-		log.Fatalf("Error parsing JSON: %v", err)
+		var ipResponse map[string]string
+		body, _ := ioutil.ReadAll(resp.Body)
+		err = json.Unmarshal(body, &ipResponse)
+		if err != nil {
+			log.Fatalf("Error parsing JSON: %v", err)
+		}
+
+		publicIP := ipResponse["ip"]
+		toCheck = publicIP
 	}
 
-	publicIP := ipResponse["ip"]
 	fmt.Println()
 	fmt.Printf("%s %s\n",
-	blue(fmt.Sprintf("%-10s", "Public IP ")),
-	wrap(bold(publicIP)))
+	blue(fmt.Sprintf("%-10s", "IP ")),
+	wrap(bold(toCheck)))
 
-	ipInfoResp, err := http.Get(fmt.Sprintf("http://ip-api.com/json/%s", publicIP))
+	ipInfoResp, err := http.Get(fmt.Sprintf("http://ip-api.com/json/%s", toCheck))
 	if err != nil {
 		log.Fatalf("Error getting info by IP: %v", err)
 	}
 	defer ipInfoResp.Body.Close()
 
 	var ipInfoNow IpInfo
-	body, _ = ioutil.ReadAll(ipInfoResp.Body)
+	body, _ := ioutil.ReadAll(ipInfoResp.Body)
 	err = json.Unmarshal(body, &ipInfoNow)
 	if err != nil {
 		log.Fatalf("Error parsing IP data: %v", err)
 	}
 
 	// Print all output
+	if ipInfoNow.IP != toCheck {
+		fmt.Printf("%s %s\n", 
+		yellow(fmt.Sprintf("%-10s", "Raw IP ")), 
+		wrap(bold(ipInfoNow.IP)))
+	}
+
 	fmt.Println()
 
 	fmt.Printf("%s %s\n", 
