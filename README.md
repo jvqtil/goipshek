@@ -1,5 +1,5 @@
 # goipshek
-Get you IP fast via CLI
+Check your or other IP fast via CLI
  
 <img src="photo.png" width="500px">
 
