@@ -11,6 +11,10 @@ Run this command in terminal and it will install everything itself
 ```sh
 curl https://raw.githubusercontent.com/jvqtil/goipshek/refs/heads/main/install.sh | sh
 ```
+or if you prefer GoLang package manager use
+```sh
+go install github.com/jvqtil/goipshek@latest
+```
 #### Manual way
 Go to [releases](https://github.com/jvqtil/goipshek/releases/) and download latest binary for your OS, then move it to `/usr/local/bin/` and enjoy with simple `goipshek` in terminal! (You can rename the binary btw)
 
