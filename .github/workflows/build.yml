@@ -1,0 +1,65 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.3'
+
+      - name: Build linux amd64
+        run: GOOS=linux GOARCH=amd64 go build -o dist/goipshek-linux-amd .
+
+      - name: Build linux arm64
+        run: GOOS=linux GOARCH=arm64 go build -o dist/goipshek-linux-arm .
+
+      - name: Build macos arm64
+        run: GOOS=darwin GOARCH=arm64 go build -o dist/goipshek-macos-arm .
+
+      - name: Delete old tag (if exists)
+        run: |
+          git fetch --tags
+          if git rev-parse -q --verify "refs/tags/goipshek" >/dev/null; then
+            git tag -d goipshek
+            git push origin :refs/tags/goipshek
+          fi
+
+      - name: Create and push new tag
+        run: |
+          git tag goipshek
+          git push origin goipshek
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: goipshek
+          name: goipshek
+          body: |
+            # files in release
+
+            - goipshek for linux amd64
+            - goipshek for linux arm64
+            - goipshek for macos arm64
+          files: |
+            dist/goipshek-linux-amd
+            dist/goipshek-linux-arm
+            dist/goipshek-macos-arm
+          draft: false
+          prerelease: false
