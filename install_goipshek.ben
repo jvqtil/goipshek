@@ -1,0 +1,4 @@
+name: "install_goipshek"
+version: "@"
+description: "The gopishek installer Ben"
+script: "https://raw.githubusercontent.com/jvqtil/goipshek/refs/heads/main/install.sh"
