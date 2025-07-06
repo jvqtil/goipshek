@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 
@@ -12,17 +13,18 @@ import (
 )
 
 type ipInfo struct {
-	IP       string `json:"query"`
-	Country  string `json:"country"`
-	RG       string `json:"region"`
-	Region   string `json:"regionName"`
-	City     string `json:"city"`
-	ISP      string `json:"isp"`
-	Org      string `json:"org"`
-	AS       string `json:"as"`
+	IP      string `json:"query"`
+	Country string `json:"country"`
+	RG      string `json:"region"`
+	Region  string `json:"regionName"`
+	City    string `json:"city"`
+	ISP     string `json:"isp"`
+	Org     string `json:"org"`
+	AS      string `json:"as"`
 }
 
 var (
+	white  = color.New(color.FgWhite).SprintFunc()
 	red    = color.New(color.FgRed).SprintFunc()
 	blue   = color.New(color.FgBlue).SprintFunc()
 	green  = color.New(color.FgGreen).SprintFunc()
@@ -40,9 +42,15 @@ func main() {
 		toCheck = getUserIP()
 	}
 
+	localip, err := getLocalIP()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	// Print all output
 	fmt.Println()
-	printer("IP", bold(toCheck), blue)
+	printer("Local IP", bold(localip), white)
+	printer("Public IP", bold(toCheck), blue)
 
 	ipInfoNow := getInfo(toCheck)
 
@@ -80,7 +88,9 @@ func getUserIP() string {
 	}
 	defer resp.Body.Close()
 
-	var result struct{ IP string `json:"ip"` }
+	var result struct {
+		IP string `json:"ip"`
+	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		log.Fatalf("Error decoding IP: %v", err)
 	}
@@ -104,4 +114,11 @@ func getInfo(toCheck string) ipInfo {
 	}
 
 	return ipInfoNow
+}
+
+func getLocalIP() (string, error) {
+	conn, _ := net.Dial("udp", "8.8.8.8:80")
+	defer conn.Close()
+
+	return conn.LocalAddr().(*net.UDPAddr).IP.String(), nil
 }
