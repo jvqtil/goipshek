@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net"
 	"net/http"
 	"os"
 
@@ -42,14 +41,8 @@ func main() {
 		toCheck = getUserIP()
 	}
 
-	localip, err := getLocalIP()
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	// Print all output
 	fmt.Println()
-	printer("Local IP", bold(localip), white)
 	printer("Public IP", bold(toCheck), blue)
 
 	ipInfoNow := getInfo(toCheck)
@@ -114,11 +107,4 @@ func getInfo(toCheck string) ipInfo {
 	}
 
 	return ipInfoNow
-}
-
-func getLocalIP() (string, error) {
-	conn, _ := net.Dial("udp", "8.8.8.8:80")
-	defer conn.Close()
-
-	return conn.LocalAddr().(*net.UDPAddr).IP.String(), nil
 }
