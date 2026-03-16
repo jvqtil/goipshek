@@ -1,5 +1,5 @@
-# goipshek
-Check your or other IP fast via CLI
+# goipshek [![Go Report Card](https://goreportcard.com/badge/github.com/jvqtil/goipshek)](https://goreportcard.com/report/github.com/jvqtil/goipshek)
+Check your or other IP info fast via CLI
  
 <img src="photo.png" width="500px">
 
