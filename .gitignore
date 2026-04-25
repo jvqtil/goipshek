@@ -1,1 +1,5 @@
 dist/
+goipshek
+.DS_Store
+TODO
+go.sum
