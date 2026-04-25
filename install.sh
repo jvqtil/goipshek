@@ -5,9 +5,9 @@ ARCH="$(uname -m)"
 FILE="unknown"
 
 case "$OS-$ARCH" in
-    linux-x86_64)   FILE="goipshek-linux-amd" ;;
-    linux-aarch64)  FILE="goipshek-linux-arm" ;;
-    darwin-arm64)   FILE="goipshek-macos-arm" ;;
+    linux-x86_64)   FILE="goipshek-linux-amd64" ;;
+    linux-aarch64)  FILE="goipshek-linux-arm64" ;;
+    darwin-arm64)   FILE="goipshek-macos-arm64" ;;
     *)
         echo "Unsupported OS/arch: $OS-$ARCH"
         exit 1
