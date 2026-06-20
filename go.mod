@@ -1,6 +1,6 @@
 module github.com/jvqtil/goipshek
 
-go 1.24.2
+go 1.25.1
 
 require github.com/fatih/color v1.18.0
 
